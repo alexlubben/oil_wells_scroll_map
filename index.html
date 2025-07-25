@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <title>Louisiana Land Loss: A Scroll Story</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,20 +15,24 @@
     html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
       font-family: system-ui, sans-serif;
       overflow-x: hidden;
+      background: white;
     }
 
     #map {
       position: fixed;
       inset: 0;
       z-index: 0;
-      background: #1a365d; /* Ocean blue background for areas outside tiles */
+      background: none; /* Remove blue background */
     }
 
     #scrolly {
       position: relative;
       z-index: 1;
+      width: 100%;
     }
 
     .step {
@@ -58,26 +64,20 @@
       border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .step-content h3 {
-      margin: 0 0 1rem 0;
-      color: #fff;
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    .step-content p {
-      margin: 0;
-      color: #fff;
-    }
-
-    /* Active step styling */
     .step.is-active .step-content {
       background: rgba(0, 0, 0, 1);
       border-left: 4px solid #67000d;
       box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
     }
 
-    /* Spacer for smooth scrolling */
+    @media (max-width: 600px) {
+      .step-content {
+        max-width: 90%;
+        padding: 1rem;
+        font-size: 1rem;
+      }
+    }
+
     .spacer {
       height: 50vh;
     }
@@ -85,176 +85,121 @@
 </head>
 <body>
 
-<div id="map"></div>
+  <div id="map"></div>
 
-<section id="scrolly">
-  <div class="spacer"></div>
-  
-  <div class="step" data-step="1">
-    <div class="step-content">
-      <p>In 1932, Louisiana's coastal wetlands extended far into what is now open water. Extensive marshlands protected inland communities.</p>
+  <section id="scrolly">
+    <div class="spacer"></div>
+
+    <div class="step" data-step="1">
+      <div class="step-content">
+        <p>In 1932, Louisiana's coastal wetlands extended far into what is now open water. Extensive marshlands protected inland communities.</p>
+      </div>
     </div>
-  </div>
-  
-  <div class="step" data-step="2">
-    <div class="step-content">
-      <p>Human activities and natural processes began reshaping the coast. River channelization and oil extraction disrupted the ecosystem.</p>
+
+    <div class="step" data-step="2">
+      <div class="step-content">
+        <p>Human activities and natural processes began reshaping the coast. River channelization and oil extraction disrupted the ecosystem.</p>
+      </div>
     </div>
-  </div>
-  
-  <div class="step" data-step="3">
-    <div class="step-content">
-      <p>Climate change effects compounded existing problems. Major hurricanes dramatically reshaped the coastline in just days.</p>
+
+    <div class="step" data-step="3">
+      <div class="step-content">
+        <p>Climate change effects compounded existing problems. Major hurricanes dramatically reshaped the coastline in just days.</p>
+      </div>
     </div>
-  </div>
-  
-  <div class="step" data-step="4">
-    <div class="step-content">
-      <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over 1,900 square miles since the 1930s.</p>
+
+    <div class="step" data-step="4">
+      <div class="step-content">
+        <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over 1,900 square miles since the 1930s.</p>
+      </div>
     </div>
-  </div>
 
-  <div class="step" data-step="5">
-    <div class="step-content">
-      <p>A new analysis from The Times-Picayune has found thousands of wells that were drilled on land that are now below the water's surface.</p>
+    <div class="step" data-step="5">
+      <div class="step-content">
+        <p>A new analysis from The Times-Picayune has found thousands of wells that were drilled on land that are now below the water's surface.</p>
+      </div>
     </div>
-  </div>
 
-  <div class="step" data-step="6">
-    <div class="step-content">
-      <p>As sea levels rise, thousands more will become submerged.</p>
+    <div class="step" data-step="6">
+      <div class="step-content">
+        <p>As sea levels rise, thousands more will become submerged.</p>
+      </div>
     </div>
-  </div>
-  
-  <div class="spacer"></div>
-</section>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/scrollama"></script>
-<script>
-// Define the exact bounds of your tile coverage based on what I can see in your screenshot
-const tileBounds = L.latLngBounds(
-  [28.8, -90.3], // Southwest corner - covers the full extent of your blue data
-  [29.7, -88.5]  // Northeast corner - covers the full extent of your blue data
-);
+    <div class="spacer"></div>
+  </section>
 
-// Initialize the map with better settings for your data
-const map = L.map('map', {
-  center: [29.25, -88.6], // Shifted further east to center the Louisiana coast
-  zoom: 8.5, // Slightly higher zoom to fill more of the viewport
-  zoomControl: false,
-  dragging: false,
-  scrollWheelZoom: false,
-  doubleClickZoom: false,
-  boxZoom: false,
-  touchZoom: false,
-  keyboard: false,
-  maxBounds: tileBounds,
-  maxBoundsViscosity: 1.0
-});
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/scrollama"></script>
+  <script>
+    const tileBounds = L.latLngBounds([28.8, -90.3], [29.7, -88.5]);
 
-// Create the 2020 layer (base layer)
-const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
-  minZoom: 6,
-  maxZoom: 12,
-  bounds: tileBounds, // Limit tiles to your coverage area
-  errorTileUrl: '',
-  attribution: ''
-}).addTo(map);
+    const map = L.map('map', {
+      center: [29.25, -88.6],
+      zoom: 8.5,
+      zoomControl: false,
+      dragging: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+      touchZoom: false,
+      keyboard: false,
+      maxBounds: tileBounds,
+      maxBoundsViscosity: 1.0
+    });
 
-// Create the 1932 layer (overlay layer that will fade)
-const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
-  opacity: 1,
-  minZoom: 6,
-  maxZoom: 12,
-  bounds: tileBounds, // Limit tiles to your coverage area
-  errorTileUrl: '',
-  attribution: ''
-}).addTo(map);
+    const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
+      minZoom: 6,
+      maxZoom: 12,
+      bounds: tileBounds,
+      errorTileUrl: '',
+    }).addTo(map);
 
-// Fit the map exactly to your tile bounds with no padding
-map.fitBounds(tileBounds, {
-  padding: [0, 0] // No padding to fill viewport completely
-});
+    const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
+      opacity: 1,
+      minZoom: 6,
+      maxZoom: 12,
+      bounds: tileBounds,
+      errorTileUrl: '',
+    }).addTo(map);
 
-// Add debugging to see what's happening with tiles
-layer2020.on('tileerror', function(e) {
-  console.log('2020 tile error:', e.tile.src);
-});
+    map.fitBounds(tileBounds, { padding: [0, 0] });
 
-layer1932.on('tileerror', function(e) {
-  console.log('1932 tile error:', e.tile.src);
-});
+    const scroller = scrollama();
 
-layer2020.on('tileload', function(e) {
-  console.log('2020 tile loaded successfully');
-});
+    function handleStepEnter(response) {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
+      response.element.classList.add('is-active');
+    }
 
-// Initialize scrollama
-const scroller = scrollama();
+    function handleStepExit(response) {
+      response.element.classList.remove('is-active');
+    }
 
-// Handle step enter
-function handleStepEnter(response) {
-  const step = parseInt(response.element.dataset.step);
-  console.log('Step entered:', step);
-  
-  // Remove active class from all steps
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
-  
-  // Add active class to current step
-  response.element.classList.add('is-active');
-}
+    function handleStepProgress(response) {
+      const step = parseInt(response.element.dataset.step);
+      const progress = response.progress;
+      const totalSteps = 6;
+      const overallProgress = (step - 1 + progress) / totalSteps;
+      const opacity = Math.max(0, Math.min(1, 1 - overallProgress));
+      layer1932.setOpacity(opacity);
+    }
 
-// Handle step exit
-function handleStepExit(response) {
-  response.element.classList.remove('is-active');
-}
+    scroller
+      .setup({
+        step: '.step',
+        offset: 0.5,
+        progress: true,
+        debug: false
+      })
+      .onStepEnter(handleStepEnter)
+      .onStepExit(handleStepExit)
+      .onStepProgress(handleStepProgress);
 
-// Handle progress for smooth transitions
-function handleStepProgress(response) {
-  const step = parseInt(response.element.dataset.step);
-  const progress = response.progress;
-  
-  // Calculate smooth opacity based on overall scroll progress
-  const totalSteps = 6;
-  const overallProgress = (step - 1 + progress) / totalSteps;
-  
-  // Smooth opacity transition from 1 to 0
-  const opacity = Math.max(0, Math.min(1, 1 - overallProgress));
-  
-  layer1932.setOpacity(opacity);
-}
-
-// Setup scrollama
-scroller
-  .setup({
-    step: '.step',
-    offset: 0.5,
-    progress: true,
-    debug: false
-  })
-  .onStepEnter(handleStepEnter)
-  .onStepExit(handleStepExit)
-  .onStepProgress(handleStepProgress);
-
-// Handle resize
-window.addEventListener('resize', function() {
-  scroller.resize();
-  // Re-fit bounds on resize to maintain coverage
-  map.fitBounds(tileBounds, { padding: [0, 0] });
-});
-
-// Add a function to help you find the right bounds
-function findTileBounds() {
-  console.log('Current map bounds:', map.getBounds().toString());
-  console.log('Current map center:', map.getCenter().toString());
-  console.log('Current zoom:', map.getZoom());
-}
-
-// Call this function in console to help debug: findTileBounds()
-window.findTileBounds = findTileBounds;
-
-console.log('Map initialized with bounds:', tileBounds.toString());
-</script>
+    window.addEventListener('resize', function () {
+      scroller.resize();
+      map.fitBounds(tileBounds, { padding: [0, 0] });
+    });
+  </script>
 </body>
 </html>
