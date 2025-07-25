@@ -21,61 +21,65 @@
       position: fixed;
       inset: 0;
       z-index: 0;
+      background: #1a365d; /* Ocean blue background for areas outside tiles */
     }
 
     #scrolly {
       position: relative;
       z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 4vh 2vw;
     }
 
     .step {
-      min-height: unset;
-      margin-bottom: 80vh;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .step-content {
+      max-width: 400px;
       padding: 1.5rem 2rem;
-      width: fit-content;
-      max-width: 350px;
-      min-width: 280px;
       font-size: 1.1rem;
       line-height: 1.6;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.9);
       color: #fff;
       border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       transition: all 0.3s ease;
     }
 
-    .step:hover {
-      background: rgba(255, 255, 255, 0.98);
+    .step-content:hover {
+      background: rgba(0, 0, 0, 0.95);
       transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
-    .step:last-child {
-      margin-bottom: 100vh;
-    }
-
-    .step h3 {
+    .step-content h3 {
       margin: 0 0 1rem 0;
       color: #fff;
       font-size: 1.4rem;
       font-weight: 600;
     }
 
-    .step p {
+    .step-content p {
       margin: 0;
       color: #fff;
     }
 
-    /* Add visual indicator for active step */
-    .step.active {
+    /* Active step styling */
+    .step.is-active .step-content {
       background: rgba(0, 0, 0, 1);
       border-left: 4px solid #67000d;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Spacer for smooth scrolling */
+    .spacer {
+      height: 50vh;
     }
   </style>
 </head>
@@ -84,154 +88,173 @@
 <div id="map"></div>
 
 <section id="scrolly">
+  <div class="spacer"></div>
+  
   <div class="step" data-step="1">
-    <p>In 1932, Louisiana's coastal wetlands extended far into what is now open water. Extensive marshlands protected inland communities.</p>
+    <div class="step-content">
+      <p>In 1932, Louisiana's coastal wetlands extended far into what is now open water. Extensive marshlands protected inland communities.</p>
+    </div>
   </div>
   
   <div class="step" data-step="2">
-    <p>Human activities and natural processes began reshaping the coast. River channelization and oil extraction disrupted the ecosystem.</p>
+    <div class="step-content">
+      <p>Human activities and natural processes began reshaping the coast. River channelization and oil extraction disrupted the ecosystem.</p>
+    </div>
   </div>
   
   <div class="step" data-step="3">
-    <p>Climate change effects compounded existing problems. Major hurricanes dramatically reshaped the coastline in just days.</p>
+    <div class="step-content">
+      <p>Climate change effects compounded existing problems. Major hurricanes dramatically reshaped the coastline in just days.</p>
+    </div>
   </div>
   
   <div class="step" data-step="4">
-    <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over 1,900 square miles since the 1930s.</p>
+    <div class="step-content">
+      <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over 1,900 square miles since the 1930s.</p>
+    </div>
   </div>
 
   <div class="step" data-step="5">
-    <p>A new analysis from The Times-Picayune has found thousands of wells that were drilled on land that are now below the water's surface.</p>
+    <div class="step-content">
+      <p>A new analysis from The Times-Picayune has found thousands of wells that were drilled on land that are now below the water's surface.</p>
+    </div>
   </div>
 
   <div class="step" data-step="6">
-    <p>As sea levels rise, thousands more will become submerged.</p>
+    <div class="step-content">
+      <p>As sea levels rise, thousands more will become submerged.</p>
+    </div>
   </div>
-  </section>
+  
+  <div class="spacer"></div>
+</section>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/scrollama"></script>
 <script>
-// Initialize the map
+// Define the exact bounds of your tile coverage based on what I can see in your screenshot
+const tileBounds = L.latLngBounds(
+  [28.8, -90.3], // Southwest corner - covers the full extent of your blue data
+  [29.7, -88.5]  // Northeast corner - covers the full extent of your blue data
+);
+
+// Initialize the map with better settings for your data
 const map = L.map('map', {
-  center: [29.2, -89.4],
-  zoom: 10,
+  center: [29.25, -88.6], // Shifted further east to center the Louisiana coast
+  zoom: 8.5, // Slightly higher zoom to fill more of the viewport
   zoomControl: false,
   dragging: false,
   scrollWheelZoom: false,
   doubleClickZoom: false,
   boxZoom: false,
   touchZoom: false,
-  keyboard: false
+  keyboard: false,
+  maxBounds: tileBounds,
+  maxBoundsViscosity: 1.0
 });
 
 // Create the 2020 layer (base layer)
 const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
-  minZoom: 7,
-  maxZoom: 10,
-  errorTileUrl: ''
+  minZoom: 6,
+  maxZoom: 12,
+  bounds: tileBounds, // Limit tiles to your coverage area
+  errorTileUrl: '',
+  attribution: ''
 }).addTo(map);
 
 // Create the 1932 layer (overlay layer that will fade)
 const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
   opacity: 1,
-  minZoom: 7,
-  maxZoom: 10,
-  errorTileUrl: ''
+  minZoom: 6,
+  maxZoom: 12,
+  bounds: tileBounds, // Limit tiles to your coverage area
+  errorTileUrl: '',
+  attribution: ''
 }).addTo(map);
 
-// Handle scroll step changes with smooth gradual fade
-function handleStepEnter(step, progress = 0) {
-  console.log('Step entered:', step, 'Progress:', progress);
+// Fit the map exactly to your tile bounds with no padding
+map.fitBounds(tileBounds, {
+  padding: [0, 0] // No padding to fill viewport completely
+});
+
+// Add debugging to see what's happening with tiles
+layer2020.on('tileerror', function(e) {
+  console.log('2020 tile error:', e.tile.src);
+});
+
+layer1932.on('tileerror', function(e) {
+  console.log('1932 tile error:', e.tile.src);
+});
+
+layer2020.on('tileload', function(e) {
+  console.log('2020 tile loaded successfully');
+});
+
+// Initialize scrollama
+const scroller = scrollama();
+
+// Handle step enter
+function handleStepEnter(response) {
+  const step = parseInt(response.element.dataset.step);
+  console.log('Step entered:', step);
   
   // Remove active class from all steps
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
   
   // Add active class to current step
-  const currentStepElement = document.querySelector(`[data-step="${step}"]`);
-  if (currentStepElement) {
-    currentStepElement.classList.add('active');
-  }
+  response.element.classList.add('is-active');
+}
+
+// Handle step exit
+function handleStepExit(response) {
+  response.element.classList.remove('is-active');
+}
+
+// Handle progress for smooth transitions
+function handleStepProgress(response) {
+  const step = parseInt(response.element.dataset.step);
+  const progress = response.progress;
   
-  // Smooth opacity fade with interpolation between steps
-  let opacity;
-  switch(step) {
-    case 1:
-      opacity = 1.0;
-      break;
-    case 2:
-      opacity = 0.80;
-      break;
-    case 3:
-      opacity = 0.60;
-      break;
-    case 4:
-      opacity = 0.40;
-      break;
-    case 5:
-      opacity = 0.2;
-      break;
-    case 6:
-      opacity = 0
-      break;
-  }
+  // Calculate smooth opacity based on overall scroll progress
+  const totalSteps = 6;
+  const overallProgress = (step - 1 + progress) / totalSteps;
   
-  console.log(`Setting 1932 layer opacity to ${opacity}`);
+  // Smooth opacity transition from 1 to 0
+  const opacity = Math.max(0, Math.min(1, 1 - overallProgress));
+  
   layer1932.setOpacity(opacity);
 }
 
-// Enhanced scroll detection with smooth transitions
-function initScrollDetection() {
-  const steps = document.querySelectorAll('.step');
-  let currentStep = 0;
+// Setup scrollama
+scroller
+  .setup({
+    step: '.step',
+    offset: 0.5,
+    progress: true,
+    debug: false
+  })
+  .onStepEnter(handleStepEnter)
+  .onStepExit(handleStepExit)
+  .onStepProgress(handleStepProgress);
 
-  function checkSteps() {
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const windowHeight = window.innerHeight;
-    const triggerPoint = windowHeight / 2;
+// Handle resize
+window.addEventListener('resize', function() {
+  scroller.resize();
+  // Re-fit bounds on resize to maintain coverage
+  map.fitBounds(tileBounds, { padding: [0, 0] });
+});
 
-    // Find which step we're in and calculate progress within that step
-    steps.forEach((step, index) => {
-      const stepTop = step.offsetTop;
-      const stepBottom = stepTop + step.offsetHeight;
-      const stepCenter = stepTop + (step.offsetHeight / 2);
-      
-      if (scrollTop + triggerPoint >= stepTop && scrollTop + triggerPoint <= stepBottom) {
-        if (currentStep !== index + 1) {
-          currentStep = index + 1;
-          console.log('Pure JS detected step:', currentStep);
-          
-          // Calculate progress through the step (0 to 1)
-          const stepProgress = Math.max(0, Math.min(1, 
-            (scrollTop + triggerPoint - stepTop) / step.offsetHeight
-          ));
-          
-          handleStepEnter(currentStep, stepProgress);
-        }
-      }
-    });
-  }
-
-  // Throttle scroll events for better performance
-  let ticking = false;
-  function throttledCheckSteps() {
-    if (!ticking) {
-      requestAnimationFrame(() => {
-        checkSteps();
-        ticking = false;
-      });
-      ticking = true;
-    }
-  }
-
-  window.addEventListener('scroll', throttledCheckSteps);
-  checkSteps(); // Initial check
+// Add a function to help you find the right bounds
+function findTileBounds() {
+  console.log('Current map bounds:', map.getBounds().toString());
+  console.log('Current map center:', map.getCenter().toString());
+  console.log('Current zoom:', map.getZoom());
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('DOM loaded, initializing scroll detection');
-  initScrollDetection();
-});
+// Call this function in console to help debug: findTileBounds()
+window.findTileBounds = findTileBounds;
+
+console.log('Map initialized with bounds:', tileBounds.toString());
 </script>
 </body>
 </html>
