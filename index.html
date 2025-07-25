@@ -21,7 +21,6 @@
       position: fixed;
       inset: 0;
       z-index: 0;
-      background: #1a365d; /* Ocean blue background for areas outside tiles */
     }
 
     #scrolly {
@@ -132,52 +131,35 @@
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/scrollama"></script>
 <script>
-// Define the exact bounds of your tile coverage based on what I can see in your screenshot
-const tileBounds = L.latLngBounds(
-  [28.8, -90.3], // Southwest corner - covers the full extent of your blue data
-  [29.7, -88.5]  // Northeast corner - covers the full extent of your blue data
-);
-
-// Initialize the map with better settings for your data
+// Initialize the map
 const map = L.map('map', {
-  center: [29.25, -88.6], // Shifted further east to center the Louisiana coast
-  zoom: 8.5, // Slightly higher zoom to fill more of the viewport
+  center: [29.2, -89.4],
+  zoom: 9, // Try zoom 9 instead of 10
   zoomControl: false,
   dragging: false,
   scrollWheelZoom: false,
   doubleClickZoom: false,
   boxZoom: false,
   touchZoom: false,
-  keyboard: false,
-  maxBounds: tileBounds,
-  maxBoundsViscosity: 1.0
+  keyboard: false
 });
 
-// Create the 2020 layer (base layer)
+// Create the 2020 layer (base layer) - match your exported zoom levels
 const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
   minZoom: 6,
   maxZoom: 12,
-  bounds: tileBounds, // Limit tiles to your coverage area
-  errorTileUrl: '',
-  attribution: ''
+  errorTileUrl: ''
 }).addTo(map);
 
-// Create the 1932 layer (overlay layer that will fade)
+// Create the 1932 layer (overlay layer that will fade) - match your exported zoom levels
 const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
   opacity: 1,
   minZoom: 6,
   maxZoom: 12,
-  bounds: tileBounds, // Limit tiles to your coverage area
-  errorTileUrl: '',
-  attribution: ''
+  errorTileUrl: ''
 }).addTo(map);
 
-// Fit the map exactly to your tile bounds with no padding
-map.fitBounds(tileBounds, {
-  padding: [0, 0] // No padding to fill viewport completely
-});
-
-// Add debugging to see what's happening with tiles
+// Add error handling to see if tiles are loading
 layer2020.on('tileerror', function(e) {
   console.log('2020 tile error:', e.tile.src);
 });
@@ -186,8 +168,16 @@ layer1932.on('tileerror', function(e) {
   console.log('1932 tile error:', e.tile.src);
 });
 
-layer2020.on('tileload', function(e) {
-  console.log('2020 tile loaded successfully');
+// Try to fit the map to the area where you have tiles
+// Adjust these coordinates based on your actual tile coverage
+const tileBounds = L.latLngBounds(
+  [28.8, -90.2], // Southwest - adjust based on your data
+  [29.6, -88.6]  // Northeast - adjust based on your data
+);
+
+// Fit the map to show the tile area
+map.fitBounds(tileBounds, {
+  padding: [20, 20] // Add some padding
 });
 
 // Initialize scrollama
@@ -216,12 +206,14 @@ function handleStepProgress(response) {
   const progress = response.progress;
   
   // Calculate smooth opacity based on overall scroll progress
+  // We have 6 steps, so each step represents 1/6 of the total fade
   const totalSteps = 6;
   const overallProgress = (step - 1 + progress) / totalSteps;
   
   // Smooth opacity transition from 1 to 0
   const opacity = Math.max(0, Math.min(1, 1 - overallProgress));
   
+  console.log(`Step ${step}, Progress: ${progress.toFixed(2)}, Overall: ${overallProgress.toFixed(2)}, Opacity: ${opacity.toFixed(2)}`);
   layer1932.setOpacity(opacity);
 }
 
@@ -229,32 +221,18 @@ function handleStepProgress(response) {
 scroller
   .setup({
     step: '.step',
-    offset: 0.5,
-    progress: true,
-    debug: false
+    offset: 0.5, // Trigger when step is 50% visible
+    progress: true, // Enable progress tracking for smooth transitions
+    debug: false // Set to true for debugging
   })
   .onStepEnter(handleStepEnter)
   .onStepExit(handleStepExit)
-  .onStepProgress(handleStepProgress);
+  .onStepProgress(handleStepProgress); // Add progress handler
 
 // Handle resize
-window.addEventListener('resize', function() {
-  scroller.resize();
-  // Re-fit bounds on resize to maintain coverage
-  map.fitBounds(tileBounds, { padding: [0, 0] });
-});
+window.addEventListener('resize', scroller.resize);
 
-// Add a function to help you find the right bounds
-function findTileBounds() {
-  console.log('Current map bounds:', map.getBounds().toString());
-  console.log('Current map center:', map.getCenter().toString());
-  console.log('Current zoom:', map.getZoom());
-}
-
-// Call this function in console to help debug: findTileBounds()
-window.findTileBounds = findTileBounds;
-
-console.log('Map initialized with bounds:', tileBounds.toString());
+console.log('Scrollama initialized');
 </script>
 </body>
 </html>
