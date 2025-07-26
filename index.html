@@ -134,9 +134,37 @@
   <script>
     const tileBounds = L.latLngBounds([28.8, -90.3], [29.7, -88.5]);
 
+    // Function to get appropriate zoom and center based on screen size
+    function getMapSettings() {
+      const isMobile = window.innerWidth <= 768;
+      const isSmallMobile = window.innerWidth <= 480;
+      
+      if (isSmallMobile) {
+        return {
+          center: [29.25, -89.4], // Shifted slightly west to center better
+          zoom: 9.5,
+          padding: [20, 20]
+        };
+      } else if (isMobile) {
+        return {
+          center: [29.25, -89.0],
+          zoom: 9.0,
+          padding: [10, 10]
+        };
+      } else {
+        return {
+          center: [29.25, -88.6],
+          zoom: 8.5,
+          padding: [0, 0]
+        };
+      }
+    }
+
+    const mapSettings = getMapSettings();
+
     const map = L.map('map', {
-      center: [29.25, -88.6],
-      zoom: 8.5,
+      center: mapSettings.center,
+      zoom: mapSettings.zoom,
       zoomControl: false,
       dragging: false,
       scrollWheelZoom: false,
@@ -163,7 +191,7 @@
       errorTileUrl: '',
     }).addTo(map);
 
-    map.fitBounds(tileBounds, { padding: [0, 0] });
+    map.fitBounds(tileBounds, { padding: mapSettings.padding });
 
     const scroller = scrollama();
 
@@ -198,7 +226,11 @@
 
     window.addEventListener('resize', function () {
       scroller.resize();
-      map.fitBounds(tileBounds, { padding: [0, 0] });
+      
+      // Update map settings on resize
+      const newSettings = getMapSettings();
+      map.setView(newSettings.center, newSettings.zoom);
+      map.fitBounds(tileBounds, { padding: newSettings.padding });
     });
   </script>
 </body>
