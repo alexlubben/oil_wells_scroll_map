@@ -141,20 +141,20 @@
       
       if (isSmallMobile) {
         return {
-          center: [29.15, -89.5], // More focused on the delta area
-          zoom: 10.5,
-          padding: [5, 5]
+          center: [29.1, -89.6], // Even more focused on the delta area
+          zoom: 11.2,
+          padding: [2, 2]
         };
       } else if (isMobile) {
         return {
-          center: [29.2, -89.2],
-          zoom: 10.0,
-          padding: [5, 5]
+          center: [29.15, -89.3],
+          zoom: 10.8,
+          padding: [2, 2]
         };
       } else {
         return {
-          center: [29.25, -88.6],
-          zoom: 8.5,
+          center: [29.25, -88.8], // Slightly adjusted for desktop
+          zoom: 8.3, // Slightly pulled back for desktop
           padding: [0, 0]
         };
       }
