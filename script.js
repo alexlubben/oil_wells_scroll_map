@@ -8,7 +8,8 @@ const map = L.map('map', {
   doubleClickZoom: false,
   boxZoom: false,
   touchZoom: false,
-  keyboard: false
+  keyboard: false,
+  attributionControl: false
 });
 
 // Create the 2020 layer (base layer)
