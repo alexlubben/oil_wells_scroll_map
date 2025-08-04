@@ -250,7 +250,13 @@
       const atTop = window.scrollY <= 0;
       const atBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight;
       if ((atTop && deltaY < 0) || (atBottom && deltaY > 0)) {
-        parent.postMessage({ type: 'iframe-scroll', delta: deltaY }, '*');
+        if (parent && parent !== window) {
+          try {
+            parent.scrollBy(0, deltaY);
+          } catch (e) {
+            // Ignore cross-origin access errors
+          }
+        }
         return true;
       }
       return false;
