@@ -164,7 +164,7 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/scrollama"></script>
   <script>
-    const tileBounds = L.latLngBounds([28.8, -91.3], [29.7, -88.3]);
+    const tileBounds = L.latLngBounds([28.8, -99], [29.7, -88.3]);
 
     // Function to get appropriate zoom and center based on screen size
     function getMapSettings() {
@@ -178,12 +178,12 @@
         };
       } else if (isMobile) {
         return {
-          center: [29, -89.25],
+          center: [29, -89.7],
           zoom: 10, // Increased for higher resolution
         };
       } else {
         return {
-          center: [29, -89.25],
+          center: [29, -89.7],
           zoom: 10
         };
       }
