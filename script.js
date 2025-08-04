@@ -1,6 +1,6 @@
 // Initialize the map
 const map = L.map('map', {
-  center: [29.2, -89.4],
+  center: [29.6, -89.7],
   zoom: 10,
   zoomControl: false,
   dragging: false,
@@ -14,16 +14,16 @@ const map = L.map('map', {
 
 // Create the 2020 layer (base layer)
 const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
-  minZoom: 7,
-  maxZoom: 10,
+  minZoom: 8,
+  maxZoom: 14,
   errorTileUrl: ''
 }).addTo(map);
 
 // Create the 1932 layer (overlay layer that will fade)
 const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
   opacity: 1,
-  minZoom: 7,
-  maxZoom: 10,
+  minZoom: 8,
+  maxZoom: 14,
   errorTileUrl: ''
 }).addTo(map);
 
