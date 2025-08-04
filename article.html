@@ -19,16 +19,6 @@
 <body>
   <h1>Sample Article</h1>
   <iframe src="index.html" id="map-frame"></iframe>
-  <script>
-    window.addEventListener('message', function(event) {
-      if (event.data && event.data.type === 'iframe-scroll') {
-        const delta = event.data.delta || 0;
-        requestAnimationFrame(() => {
-          window.scrollBy(0, delta);
-        });
-      }
-    });
-  </script>
   <p>More content...</p>
 </body>
 </html>
