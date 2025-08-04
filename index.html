@@ -174,20 +174,17 @@
       if (isSmallMobile) {
         return {
           center: [29.1, -89.6],
-          zoom: 12, // Increased for higher resolution
-          padding: [2, 2]
+          zoom: 11, // Increased for higher resolution
         };
       } else if (isMobile) {
         return {
           center: [29.15, -89.3],
-          zoom: 11.5, // Increased for higher resolution
-          padding: [2, 2]
+          zoom: 11, // Increased for higher resolution
         };
       } else {
         return {
           center: [29.25, -88.8],
-          zoom: 9, // Increased for higher resolution
-          padding: [0, 0]
+          zoom: 9
         };
       }
     }
@@ -213,7 +210,7 @@
     });
 
     const layer2020 = L.tileLayer('tiles/2020/{z}/{x}/{y}.png', {
-      minZoom: 6,
+      minZoom: 8,
       maxZoom: 14, // Increased for higher resolution
       bounds: tileBounds,
       errorTileUrl: '',
@@ -221,13 +218,12 @@
 
     const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
       opacity: 1,
-      minZoom: 6,
+      minZoom: 8,
       maxZoom: 14, // Increased for higher resolution
       bounds: tileBounds,
       errorTileUrl: '',
     }).addTo(map);
 
-    map.fitBounds(tileBounds, { padding: mapSettings.padding });
 
     const scroller = scrollama();
 
@@ -247,7 +243,7 @@
       const overallProgress = (step - 1 + progress) / totalSteps;
       
       // Smoother easing function for opacity transition
-      const easedProgress = 1 - Math.pow(overallProgress, 0.8);
+      const easedProgress = 1 - Math.pow(overallProgress, 0.6);
       const opacity = Math.max(0, Math.min(1, easedProgress));
       
       layer1932.setOpacity(opacity);
@@ -267,11 +263,10 @@
     window.addEventListener('resize', function () {
       scroller.resize();
 
-      // Update map settings on resize
-      const newSettings = getMapSettings();
-      map.setView(newSettings.center, newSettings.zoom);
-      map.fitBounds(tileBounds, { padding: newSettings.padding });
-    });
+        // Update map settings on resize
+        const newSettings = getMapSettings();
+        map.setView(newSettings.center, newSettings.zoom);
+      });
 
   </script>
 </body>
