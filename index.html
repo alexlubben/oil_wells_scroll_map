@@ -170,24 +170,21 @@
     function getMapSettings() {
       const isMobile = window.innerWidth <= 768;
       const isSmallMobile = window.innerWidth <= 480;
-      
+
       if (isSmallMobile) {
         return {
-          center: [29.1, -89.6],
-          zoom: 12, // Increased for higher resolution
-          padding: [2, 2]
+          center: [29.3, -89.45],
+          zoom: 12
         };
       } else if (isMobile) {
         return {
-          center: [29.15, -89.3],
-          zoom: 11.5, // Increased for higher resolution
-          padding: [2, 2]
+          center: [29.35, -89.55],
+          zoom: 11.5
         };
       } else {
         return {
-          center: [29.25, -88.8],
-          zoom: 9, // Increased for higher resolution
-          padding: [0, 0]
+          center: [29.4, -89.65],
+          zoom: 11
         };
       }
     }
@@ -227,7 +224,8 @@
       errorTileUrl: '',
     }).addTo(map);
 
-    map.fitBounds(tileBounds, { padding: mapSettings.padding });
+    // Center the map toward the northwest so the Mississippi River mouth sits near the bottom right
+    map.setView(mapSettings.center, mapSettings.zoom);
 
     const scroller = scrollama();
 
@@ -270,7 +268,6 @@
       // Update map settings on resize
       const newSettings = getMapSettings();
       map.setView(newSettings.center, newSettings.zoom);
-      map.fitBounds(tileBounds, { padding: newSettings.padding });
     });
 
   </script>
