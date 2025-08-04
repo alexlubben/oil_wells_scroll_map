@@ -27,56 +27,64 @@ const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
   errorTileUrl: ''
 }).addTo(map);
 
-// Handle scroll step changes
-function handleStepEnter(step) {
-  console.log('Step entered:', step);
-  
-  switch(step) {
-    case 1:
-      console.log('Setting 1932 layer opacity to 1');
-      layer1932.setOpacity(1);
-      break;
-    case 2:
-      console.log('Setting 1932 layer opacity to 0.5');
-      layer1932.setOpacity(0.5);
-      break;
-    case 3:
-      console.log('Setting 1932 layer opacity to 0');
-      layer1932.setOpacity(0);
-      break;
+// Handle continuous scroll progress
+let targetOpacity = 1;
+let currentOpacity = 1;
+let rafId = null;
+
+function updateOpacity() {
+  currentOpacity += (targetOpacity - currentOpacity) * 0.1;
+  layer1932.setOpacity(currentOpacity);
+
+  if (Math.abs(targetOpacity - currentOpacity) > 0.01) {
+    rafId = requestAnimationFrame(updateOpacity);
+  } else {
+    currentOpacity = targetOpacity;
+    layer1932.setOpacity(currentOpacity);
+    rafId = null;
+  }
+}
+
+function handleScrollProgress(progress) {
+  targetOpacity = 1 - Math.max(0, Math.min(1, progress));
+  if (!rafId) {
+    rafId = requestAnimationFrame(updateOpacity);
   }
 }
 
 // Pure JavaScript scroll detection
 function initScrollDetection() {
-  const steps = document.querySelectorAll('.step');
-  let currentStep = 0;
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const stepOffsets = steps.map(step => step.offsetTop);
 
-  function checkSteps() {
+  function calculateProgress() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const windowHeight = window.innerHeight;
-    const triggerPoint = windowHeight / 2; // Middle of screen
+    const center = scrollTop + windowHeight / 2;
 
-    steps.forEach((step, index) => {
-      const stepTop = step.offsetTop;
-      const stepBottom = stepTop + step.offsetHeight;
-      
-      // Check if the middle of the screen intersects with this step
-      if (scrollTop + triggerPoint >= stepTop && scrollTop + triggerPoint <= stepBottom) {
-        if (currentStep !== index + 1) {
-          currentStep = index + 1;
-          console.log('Pure JS detected step:', currentStep);
-          handleStepEnter(currentStep);
-        }
+    let progress = 0;
+
+    for (let i = 0; i < stepOffsets.length - 1; i++) {
+      const start = stepOffsets[i];
+      const end = stepOffsets[i + 1];
+      if (center >= start && center < end) {
+        const localProgress = (center - start) / (end - start);
+        progress = (i + localProgress) / (stepOffsets.length - 1);
+        break;
       }
-    });
+    }
+
+    if (center >= stepOffsets[stepOffsets.length - 1]) {
+      progress = 1;
+    }
+
+    handleScrollProgress(progress);
   }
 
-  // Check on scroll
-  window.addEventListener('scroll', checkSteps);
-  
-  // Initial check
-  checkSteps();
+  window.addEventListener('scroll', calculateProgress);
+
+  // Initial calculation
+  calculateProgress();
 }
 
 // Initialize when DOM is loaded
