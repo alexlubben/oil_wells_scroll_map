@@ -164,5 +164,10 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/scrollama"></script>
   <script src="script.js"></script>
+  <script>
+    function sendParentScroll(direction) {
+      window.parent.postMessage({type: 'iframeScroll', direction}, '*');
+    }
+  </script>
 </body>
 </html>
