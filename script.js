@@ -74,7 +74,6 @@ function disableParentScroll() {
 // disable scroll chaining at start
 disableParentScroll();
 
->>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
 function handleStepEnter(response) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
   response.element.classList.add('is-active');
