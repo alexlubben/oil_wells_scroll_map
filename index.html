@@ -1,155 +1,174 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Louisiana drilled more coastal oil wells than any other state. Thousands have sunk into the Gulf.</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-  <!-- Custom fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <title>Louisiana drilled more coastal oil wells than any other state. 
+Thousands have sunk into the Gulf.</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      font-family: Georgia, 'Times New Roman', serif;
-      overflow-x: hidden;
-      background: white;
-      /* Prevent scroll chaining by default.  We'll re-enable it in script.js on the last step. */
-      overscroll-behavior-y: contain;
-    }
-    #map {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      background: none;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-    }
-    #scrolly {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-    }
-    .step {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    .step-content {
-      max-width: 400px;
-      padding: .5rem 1.1rem;
-      font-size: 1.1rem;
-      line-height: 1.6;
-      background: #333333;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .step-content:hover {
-      background: #333333;
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, 0.2);
-    }
-    .step.is-active .step-content {
-      background: #333333;
-    }
-    .highlight {
-      color: #86bbf1;
-    }
-    .highlight-red {
-      color: #f44d38;
-    }
-    @media (max-width: 600px) {
-      .step-content {
-        max-width: 90%;
-        padding: 1rem;
-        font-size: 1rem;
+      <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Georgia:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          width: 100%;
+          font-family: Georgia, 'Times New Roman', serif;
+          overflow-x: hidden;
+          background: white;
+        }
+
+        #map {
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          background: none;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
+        }
+
+        #scrolly {
+          position: relative;
+          z-index: 1;
+          width: 100%;
+        }
+
+        .step {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 1rem;
+        }
+
+        .step-content {
+          max-width: 400px;
+          padding: .5rem 1.1rem;
+          font-size: 1.1rem;
+          line-height: 1.6;
+          background: #333333;
+          color: #fff;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .step-content:hover {
+          background: #333333;
+          transform: translateY(-2px);
+          border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .step.is-active .step-content {
+          background: #333333;
+        }
+
+      .highlight {
+        color: #86bbf1;
       }
-    }
-    .spacer {
-      height: 50vh;
-    }
-    /* Smoother tile rendering */
-    .leaflet-tile {
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      transition: opacity 0.5s ease;
-    }
-    .leaflet-fade-anim .leaflet-tile {
-      transition: opacity 0.5s ease;
-    }
-  </style>
-</head>
-<body>
-  <div id="map"></div>
-  <section id="scrolly">
-    <div class="spacer"></div>
-    <div class="step" data-step="1">
-      <div class="step-content">
-        <p>In 1932, Louisiana's coastal wetlands extended far into <span class="highlight">what is now open water</span>.</p>
-      </div>
-    </div>
-    <div class="step" data-step="2">
-      <div class="step-content">
-        <p>Land that existed in 1932 is represented in <span class="highlight">blue</span>.</p>
-      </div>
-    </div>
-    <div class="step" data-step="3">
-      <div class="step-content">
-        <p>Human activities began reshaping the coast. Oil extraction disrupted the ecosystem. Levees starved wetlands of sediment.</p>
-      </div>
-    </div>
-    <div class="step" data-step="4">
-      <div class="step-content">
-        <p>The effects of climate change are compounding existing problems.</p>
-      </div>
-    </div>
-    <div class="step" data-step="5">
-      <div class="step-content">
-        <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over <span class="highlight">1,900 square miles of land</span> since the 1930s.</p>
-      </div>
-    </div>
-    <div class="step" data-step="6">
-      <div class="step-content">
-        <p>A new analysis from <span class="highlight">The Times-Picayune</span> has found more than <span class="highlight">8,000 wells</span> that were drilled on land that are now below the water's surface.</p>
-      </div>
-    </div>
-    <div class="step" data-step="7">
-      <div class="step-content">
-        <p>The <span class="highlight-red">red areas</span> represent areas where oil wells have become submerged.</p>
-      </div>
-    </div>
-    <div class="step" data-step="8">
-      <div class="step-content">
-        <p>As sea levels rise, thousands of wells will <span class="highlight">fall below the waterline</span>.</p>
-      </div>
-    </div>
-    <div class="spacer"></div>
-  </section>
 
-  <!-- External scripts -->
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/scrollama"></script>
-  <!-- Your scrollytelling script -->
-  <script src="script.js"></script>
-  <!-- Helper to post messages to the parent page -->
-  <script>
-    function sendParentScroll(direction) {
-      window.parent.postMessage({ type: 'iframeScroll', direction }, '*');
-    }
-  </script>
-</body>
-</html>
+      .highlight-red {
+        color: #f44d38;
+      }
+
+        @media (max-width: 600px) {
+          .step-content {
+            max-width: 90%;
+            padding: 1rem;
+            font-size: 1rem;
+          }
+        }
+
+        .spacer {
+          height: 50vh;
+        }
+
+        /* Smoother tile rendering */
+        .leaflet-tile {
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
+          transition: opacity 0.5s ease;
+        }
+
+        .leaflet-fade-anim .leaflet-tile {
+          transition: opacity 0.5s ease;
+        }
+      </style>
+    </head>
+    <body>
+
+      <div id="map"></div>
+
+      <section id="scrolly">
+        <div class="spacer"></div>
+
+        <div class="step" data-step="1">
+          <div class="step-content">
+            <p>In 1932, Louisiana's coastal wetlands extended far into <span class="highlight">what is now open water</span>.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="2">
+          <div class="step-content">
+            <p>Land that existed in 1932 is represented in <span class="highlight">blue</span>.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="3">
+          <div class="step-content">
+            <p>Human activities began reshaping the coast. Oil extraction disrupted the ecosystem. Levees starved wetlands of sediment.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="4">
+          <div class="step-content">
+            <p>The effects of climate change are compounding existing problems.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="5">
+          <div class="step-content">
+            <p>Oil wells once on solid ground now sit in open water. Louisiana has lost over <span class="highlight">1,900 square miles of land</span> since the 1930s.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="6">
+          <div class="step-content">
+            <p>A new analysis from The Times-Picayune has found more than 8,000 wells that were drilled on land that are now <span class="highlight">below the water's surface</span>.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="7">
+          <div class="step-content">
+            <p>The <span class="highlight-red">red areas</span> represent areas where oil wells have become submerged.</p>
+          </div>
+        </div>
+
+        <div class="step" data-step="8">
+          <div class="step-content">
+            <p>As sea levels rise, thousands of wells will <span class="highlight">fall below the waterline</span>.</p>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+      </section>
+
+      <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+      <script src="https://unpkg.com/scrollama"></script>
+      <script src="script.js"></script>
+      <script>
+        function sendParentScroll(direction) {
+          window.parent.postMessage({type: 'iframeScroll', direction}, '*');
+        }
+      </script>
+    </body>
+    </html>
