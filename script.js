@@ -58,126 +58,68 @@ const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
   errorTileUrl: '',
 }).addTo(map);
 
-const scroller = scrollama();
+// Handle continuous scroll progress
+let targetOpacity = 1;
+let currentOpacity = 1;
+let rafId = null;
 
-const TOTAL_STEPS = 8;
+function updateOpacity() {
+  currentOpacity += (targetOpacity - currentOpacity) * 0.1;
+  layer1932.setOpacity(currentOpacity);
 
-// overscroll helpers
-function enableParentScroll() {
-  // Allow scroll chaining so the next wheel event bubbles to the parent page
-  document.documentElement.style.overscrollBehaviorY = 'auto';
-}
-function disableParentScroll() {
-  // Trap scroll events inside the iframe by containing scroll chaining
-  document.documentElement.style.overscrollBehaviorY = 'contain';
-}
-// disable scroll chaining at start
-disableParentScroll();
-
-function handleStepEnter(response) {
-  document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
-  response.element.classList.add('is-active');
-
-  const stepNum = parseInt(response.element.dataset.step, 10);
-  if (stepNum === TOTAL_STEPS) {
-    // When we reach the last step, re-enable scroll chaining so scroll events bubble to the parent page.
-    enableParentScroll();
-    // Ensure that any exit listeners are removed so they don't intercept scroll events.
-    removeExitListeners();
+  if (Math.abs(targetOpacity - currentOpacity) > 0.01) {
+    rafId = requestAnimationFrame(updateOpacity);
   } else {
-    // For intermediate steps, disable scroll chaining to trap scroll inside the iframe
-    disableParentScroll();
-    // Remove any stray exit listeners
-    removeExitListeners();
+    currentOpacity = targetOpacity;
+    layer1932.setOpacity(currentOpacity);
+    rafId = null;
   }
 }
 
-function handleStepExit(response) {
-  response.element.classList.remove('is-active');
-  // When exiting the last step, restore contain behaviour
-  const stepNum = parseInt(response.element.dataset.step, 10);
-  if (stepNum === TOTAL_STEPS) {
-    disableParentScroll();
+function handleScrollProgress(progress) {
+  targetOpacity = 1 - Math.max(0, Math.min(1, progress));
+  if (!rafId) {
+    rafId = requestAnimationFrame(updateOpacity);
   }
 }
 
-function handleStepProgress(response) {
-  const step = parseInt(response.element.dataset.step);
-  const progress = response.progress;
-  const overallProgress = (step - 1 + progress) / TOTAL_STEPS;
+// Pure JavaScript scroll detection
+function initScrollDetection() {
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const stepOffsets = steps.map(step => step.offsetTop);
 
-  // Smoother easing function for opacity transition
-  const easedProgress = 1 - Math.pow(overallProgress, 0.6);
-  const opacity = Math.max(0, Math.min(1, easedProgress));
+  function calculateProgress() {
+    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    const windowHeight = window.innerHeight;
+    const center = scrollTop + windowHeight / 2;
 
-  layer1932.setOpacity(opacity);
-}
+    let progress = 0;
 
-// The exit listeners and touch handlers remain unchanged to support message-based fallbacks
-let touchStartY = null;
-let listenersActive = false;
+    for (let i = 0; i < stepOffsets.length - 1; i++) {
+      const start = stepOffsets[i];
+      const end = stepOffsets[i + 1];
+      if (center >= start && center < end) {
+        const localProgress = (center - start) / (end - start);
+        progress = (i + localProgress) / (stepOffsets.length - 1);
+        break;
+      }
+    }
 
-function addExitListeners() {
-  if (listenersActive) return;
-  document.addEventListener('wheel', handleWheel, { passive: false });
-  document.addEventListener('touchstart', handleTouchStart, { passive: false });
-  document.addEventListener('touchmove', handleTouchMove, { passive: false });
-  document.addEventListener('touchend', handleTouchEnd, { passive: false });
-  listenersActive = true;
-}
+    if (center >= stepOffsets[stepOffsets.length - 1]) {
+      progress = 1;
+    }
 
-function removeExitListeners() {
-  if (!listenersActive) return;
-  document.removeEventListener('wheel', handleWheel, { passive: false });
-  document.removeEventListener('touchstart', handleTouchStart, { passive: false });
-  document.removeEventListener('touchmove', handleTouchMove, { passive: false });
-  document.removeEventListener('touchend', handleTouchEnd, { passive: false });
-  listenersActive = false;
-  touchStartY = null;
-}
-
-function handleWheel(e) {
-  if (e.deltaY > 0) {
-    e.preventDefault();
-    sendParentScroll('down');
-    removeExitListeners();
+    handleScrollProgress(progress);
   }
+
+  window.addEventListener('scroll', calculateProgress);
+
+  // Initial calculation
+  calculateProgress();
 }
 
-function handleTouchStart(e) {
-  if (e.touches.length === 1) {
-    touchStartY = e.touches[0].clientY;
-  }
-}
-
-function handleTouchMove(e) {
-  if (touchStartY === null) return;
-  const currentY = e.touches[0].clientY;
-  if (touchStartY - currentY > 0) {
-    e.preventDefault();
-    sendParentScroll('down');
-    removeExitListeners();
-  }
-}
-
-function handleTouchEnd() {
-  touchStartY = null;
-}
-
-scroller
-  .setup({
-    step: '.step',
-    offset: 0.5,
-    progress: true,
-    debug: false,
-  })
-  .onStepEnter(handleStepEnter)
-  .onStepExit(handleStepExit)
-  .onStepProgress(handleStepProgress);
-
-window.addEventListener('resize', function () {
-  scroller.resize();
-  // Update map settings on resize
-  const newSettings = getMapSettings();
-  map.setView(newSettings.center, newSettings.zoom);
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('DOM loaded, initializing scroll detection');
+  initScrollDetection();
 });
