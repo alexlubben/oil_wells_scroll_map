@@ -61,27 +61,61 @@ const layer1932 = L.tileLayer('tiles/1932/{z}/{x}/{y}.png', {
 const scroller = scrollama();
 
 const TOTAL_STEPS = 8;
+<<<<<<< HEAD
+
+// overscroll helpers
+function enableParentScroll() {
+  // Allow scroll chaining so the next wheel event bubbles to the parent page
+  document.documentElement.style.overscrollBehaviorY = 'auto';
+}
+function disableParentScroll() {
+  // Trap scroll events inside the iframe by containing scroll chaining
+  document.documentElement.style.overscrollBehaviorY = 'contain';
+}
+// disable scroll chaining at start
+disableParentScroll();
+
+=======
 let touchStartY = null;
 let listenersActive = false;
 
+>>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
 function handleStepEnter(response) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('is-active'));
   response.element.classList.add('is-active');
 
   const stepNum = parseInt(response.element.dataset.step, 10);
   if (stepNum === TOTAL_STEPS) {
+<<<<<<< HEAD
+    // When we reach the last step, re-enable scroll chaining so scroll events bubble to the parent page.
+    enableParentScroll();
+    // Ensure that any exit listeners are removed so they don't intercept scroll events.
+    removeExitListeners();
+  } else {
+    // For intermediate steps, disable scroll chaining to trap scroll inside the iframe
+    disableParentScroll();
+    // Remove any stray exit listeners
+=======
     addExitListeners();
   } else {
+>>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
     removeExitListeners();
   }
 }
 
 function handleStepExit(response) {
   response.element.classList.remove('is-active');
+<<<<<<< HEAD
+  // When exiting the last step, restore contain behaviour
+  const stepNum = parseInt(response.element.dataset.step, 10);
+  if (stepNum === TOTAL_STEPS) {
+    disableParentScroll();
+=======
 
   const stepNum = parseInt(response.element.dataset.step, 10);
   if (stepNum === TOTAL_STEPS) {
     removeExitListeners();
+>>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
   }
 }
 
@@ -97,6 +131,13 @@ function handleStepProgress(response) {
   layer1932.setOpacity(opacity);
 }
 
+<<<<<<< HEAD
+// The exit listeners and touch handlers remain unchanged to support message-based fallbacks
+let touchStartY = null;
+let listenersActive = false;
+
+=======
+>>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
 function addExitListeners() {
   if (listenersActive) return;
   document.addEventListener('wheel', handleWheel, { passive: false });
@@ -157,7 +198,10 @@ scroller
 
 window.addEventListener('resize', function () {
   scroller.resize();
+<<<<<<< HEAD
+=======
 
+>>>>>>> 66ec1fac316b5496a6cf1e1e5601b3ac528b1adc
   // Update map settings on resize
   const newSettings = getMapSettings();
   map.setView(newSettings.center, newSettings.zoom);
