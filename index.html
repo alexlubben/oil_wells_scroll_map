@@ -5,10 +5,13 @@
   <title>Louisiana drilled more coastal oil wells than any other state. Thousands have sunk into the Gulf.</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Leaflet CSS -->
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <!-- Custom fonts -->
   <!-- Custom fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Georgia:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
@@ -23,6 +26,8 @@
       font-family: Georgia, 'Times New Roman', serif;
       overflow-x: hidden;
       background: white;
+      /* Prevent scroll chaining by default.  We'll re-enable it in script.js on the last step. */
+      overscroll-behavior-y: contain;
       /* Prevent scroll chaining by default.  We'll re-enable it in script.js on the last step. */
       overscroll-behavior-y: contain;
     }
@@ -64,6 +69,12 @@
     }
     .step.is-active .step-content {
       background: #333333;
+    }
+    .highlight {
+      color: #86bbf1;
+    }
+    .highlight-red {
+      color: #f44d38;
     }
     .highlight {
       color: #86bbf1;
@@ -125,6 +136,7 @@
     <div class="step" data-step="6">
       <div class="step-content">
         <p>A new analysis from <span class="highlight">The Times-Picayune</span> has found more than <span class="highlight">8,000 wells</span> that were drilled on land that are now below the water's surface.</p>
+        <p>A new analysis from <span class="highlight">The Times-Picayune</span> has found more than <span class="highlight">8,000 wells</span> that were drilled on land that are now below the water's surface.</p>
       </div>
     </div>
     <div class="step" data-step="7">
@@ -140,6 +152,7 @@
     <div class="spacer"></div>
   </section>
 
+  <!-- External scripts -->
   <!-- External scripts -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://unpkg.com/scrollama"></script>
