@@ -97,48 +97,46 @@ const tileBounds = L.latLngBounds([28.8, -99], [29.7, -88.3]);
       layer1932.setOpacity(opacity);
     }
 
-    function addExitListeners() {
-      if (listenersActive) return;
-      document.addEventListener('wheel', handleWheel, { passive: false });
-      document.addEventListener('touchstart', handleTouchStart, { passive: false });
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd, { passive: false });
-      listenersActive = true;
-    }
+  function addExitListeners() {
+    if (listenersActive) return;
+    document.addEventListener('wheel', handleWheel);
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+    listenersActive = true;
+  }
 
-    function removeExitListeners() {
-      if (!listenersActive) return;
-      document.removeEventListener('wheel', handleWheel, { passive: false });
-      document.removeEventListener('touchstart', handleTouchStart, { passive: false });
-      document.removeEventListener('touchmove', handleTouchMove, { passive: false });
-      document.removeEventListener('touchend', handleTouchEnd, { passive: false });
-      listenersActive = false;
-      touchStartY = null;
-    }
+  function removeExitListeners() {
+    if (!listenersActive) return;
+    document.removeEventListener('wheel', handleWheel);
+    document.removeEventListener('touchstart', handleTouchStart);
+    document.removeEventListener('touchmove', handleTouchMove);
+    document.removeEventListener('touchend', handleTouchEnd);
+    listenersActive = false;
+    touchStartY = null;
+  }
 
-    function handleWheel(e) {
-      if (e.deltaY > 0) {
-        e.preventDefault();
-        sendParentScroll('down');
-        removeExitListeners();
-      }
+  function handleWheel(e) {
+    if (e.deltaY > 0) {
+      sendParentScroll('down');
+      removeExitListeners();
     }
+  }
 
-    function handleTouchStart(e) {
-      if (e.touches.length === 1) {
-        touchStartY = e.touches[0].clientY;
-      }
+  function handleTouchStart(e) {
+    if (e.touches.length === 1) {
+      touchStartY = e.touches[0].clientY;
     }
+  }
 
-    function handleTouchMove(e) {
-      if (touchStartY === null) return;
-      const currentY = e.touches[0].clientY;
-      if (touchStartY - currentY > 0) {
-        e.preventDefault();
-        sendParentScroll('down');
-        removeExitListeners();
-      }
+  function handleTouchMove(e) {
+    if (touchStartY === null) return;
+    const currentY = e.touches[0].clientY;
+    if (touchStartY - currentY > 0) {
+      sendParentScroll('down');
+      removeExitListeners();
     }
+  }
 
     function handleTouchEnd() {
       touchStartY = null;
