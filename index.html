@@ -23,6 +23,7 @@ Thousands have sunk into the Gulf.</title>
           width: 100%;
           font-family: Georgia, 'Times New Roman', serif;
           overflow-x: hidden;
+          overflow-y: auto;
           background: white;
         }
 
@@ -34,12 +35,20 @@ Thousands have sunk into the Gulf.</title>
           image-rendering: -webkit-optimize-contrast;
           image-rendering: crisp-edges;
           image-rendering: pixelated;
+          pointer-events: none;
+        }
+
+        /* Re-enable pointer events for map tiles and controls if needed */
+        #map .leaflet-control-container,
+        #map .leaflet-tile-container {
+          pointer-events: auto;
         }
 
         #scrolly {
           position: relative;
           z-index: 1;
           width: 100%;
+          pointer-events: auto;
         }
 
         .step {
