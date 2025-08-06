@@ -97,6 +97,7 @@ const tileBounds = L.latLngBounds([28.8, -99], [29.7, -88.3]);
       layer1932.setOpacity(opacity);
     }
 
+
     function addExitListeners() {
       if (listenersActive) return;
     document.addEventListener('wheel', handleWheel);
@@ -122,6 +123,7 @@ const tileBounds = L.latLngBounds([28.8, -99], [29.7, -88.3]);
       removeExitListeners();
     }
   }
+
 
     function handleTouchStart(e) {
       if (e.touches.length === 1) {
